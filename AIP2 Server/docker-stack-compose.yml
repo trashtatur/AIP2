@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  rest-api:
+    build: .
+    networks:
+      - proxy
+    deploy:
+      labels:
+        com.df.notify: "true"
+        com.df.distribute: "true"
+        com.df.servicePath: "/"
+        com.df.port: "8080"
+        com.df.serviceDomain: "aip.yourcoon.de"
+
+networks:
+  proxy:
+    external: true

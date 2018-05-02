@@ -4,8 +4,8 @@ info:
   description: "RESTful API für AIP2"
   version: "1.0.0"
   title: "Security Guard Accounts"
-host: "virtserver.swaggerhub.com"
-basePath: "/parakoopaG/aip-securit-guard-accounts/1.0.0"
+host: "localhost:8080"
+basePath: "/api"
 tags:
 - name: "Accountverwaltung"
 - name: "Sessionverwaltung"
