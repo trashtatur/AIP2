@@ -1,0 +1,214 @@
+---
+swagger: "2.0"
+info:
+  description: "RESTful API für AIP2"
+  version: "1.0.0"
+  title: "Security Guard Accounts"
+host: "virtserver.swaggerhub.com"
+basePath: "/parakoopaG/aip-securit-guard-accounts/1.0.0"
+tags:
+- name: "Accountverwaltung"
+- name: "Sessionverwaltung"
+  description: "Session eines eingeloggten Guards"
+schemes:
+- "https"
+paths:
+  /admin/account:
+    put:
+      tags:
+      - "Accountverwaltung"
+      operationId: "adminAccountPUT"
+      parameters:
+      - in: "body"
+        name: "account"
+        description: "Daten des Accounts, der angelegt werden soll (ohne id und mit\
+          \ unverschlüsseltem Passwort)"
+        required: true
+        schema:
+          $ref: "#/definitions/Account"
+      responses:
+        200:
+          description: "Account erfolgreich angelegt"
+          schema:
+            $ref: "#/definitions/inline_response_200"
+          examples:
+            example:
+              id: 42
+        400:
+          description: "Fehler bei Account-Anlage, falsche Daten"
+      x-swagger-router-controller: "Accountverwaltung"
+  /admin/account/{id}:
+    get:
+      tags:
+      - "Accountverwaltung"
+      description: "Account-Daten eines beliebigen Accounts abrufen"
+      operationId: "adminAccountIdGET"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Id des Accounts der abgerufen werden soll"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Liefert die Account-Daten zurück"
+          schema:
+            $ref: "#/definitions/Account"
+          examples:
+            example:
+              name: "Peter"
+              email: "peter@hans.de"
+      x-swagger-router-controller: "Accountverwaltung"
+    post:
+      tags:
+      - "Accountverwaltung"
+      description: "Daten eines Users ändern"
+      operationId: "adminAccountIdPOST"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Id des Accounts der abgerufen werden soll"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "account"
+        description: "Neue Daten des Accounts (ohne id und mit unverschlüsseltem Passwort)"
+        required: true
+        schema:
+          $ref: "#/definitions/Account"
+      responses:
+        200:
+          description: "Account erfolgreich geändert"
+        400:
+          description: "Fehlerhafte Daten"
+        404:
+          description: "Account nicht gefunden"
+      x-swagger-router-controller: "Accountverwaltung"
+    delete:
+      tags:
+      - "Accountverwaltung"
+      description: "Löscht einen Account"
+      operationId: "adminAccountIdDELETE"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Id des Accounts der abgerufen werden soll"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Account erfolgreich gelöscht"
+        404:
+          description: "Account nicht gefunden"
+      x-swagger-router-controller: "Accountverwaltung"
+  /login:
+    post:
+      tags:
+      - "Sessionverwaltung"
+      description: "Loggt einen User ein"
+      operationId: "loginPOST"
+      consumes:
+      - "application/x-www-form-urlencoded"
+      parameters:
+      - name: "email"
+        in: "formData"
+        description: "Email-Adresse des Nutzers"
+        required: false
+        type: "string"
+      - name: "password"
+        in: "formData"
+        description: "Passwort des Nutzers"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "Login erfolgreich"
+          schema:
+            $ref: "#/definitions/inline_response_200_1"
+        401:
+          description: "Login fehlgeschlagen, Email und Passwort stimmen nicht mit\
+            \ einem Nutzer überein"
+      x-swagger-router-controller: "Sessionverwaltung"
+  /logout:
+    post:
+      tags:
+      - "Sessionverwaltung"
+      description: "Session beenden, Session-Token invalidieren"
+      operationId: "logoutPOST"
+      parameters:
+      - name: "sessionToken"
+        in: "query"
+        description: "Session-Token erstellt von der Login-Schnittstelle"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "Session-Token invalidert"
+        401:
+          description: "User ist nicht eingeloggt"
+      x-swagger-router-controller: "Sessionverwaltung"
+  /profile:
+    get:
+      tags:
+      - "Sessionverwaltung"
+      description: "Account-Daten des eigenen Accounts abrufen"
+      operationId: "profileGET"
+      parameters:
+      - name: "sessionToken"
+        in: "query"
+        description: "Session-Token erstellt von der Login-Schnittstelle"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "Liefert eigene Account-Daten zurück"
+          schema:
+            $ref: "#/definitions/Account"
+          examples:
+            example:
+              name: "Peter"
+              email: "peter@hans.de"
+        401:
+          description: "User ist nicht eingeloggt"
+      x-swagger-router-controller: "Sessionverwaltung"
+definitions:
+  Account:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        description: "ID des Users"
+      name:
+        type: "string"
+        description: "Name des Users"
+      email:
+        type: "string"
+        description: "Email des Users"
+      password:
+        type: "string"
+        description: "Verschlüsseltes Passwort des Users"
+    description: "Ein User-Account"
+    example:
+      password: "password"
+      name: "name"
+      id: 0
+      email: "email"
+  inline_response_200:
+    properties:
+      id:
+        type: "integer"
+        description: "Id des neuen Users"
+  inline_response_200_1:
+    properties:
+      sessionToken:
+        type: "string"
+        description: "Session Token, der mit anderen Aktionen verwendet werden kann"
+    example:
+      sessionToken: "sessionToken"
+parameters:
+  AccountId:
+    name: "id"
+    in: "path"
+    description: "Id des Accounts der abgerufen werden soll"
+    required: true
+    type: "string"
