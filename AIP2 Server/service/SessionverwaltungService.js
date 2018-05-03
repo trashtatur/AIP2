@@ -1,5 +1,9 @@
 'use strict';
 
+const accountService = require('./AccountverwaltungService')
+const uuidv1 = require('uuid/v1');
+
+var demoSessions = {}
 
 /**
  * Loggt einen User ein
@@ -10,15 +14,16 @@
  **/
 exports.loginPOST = function(email,password) {
   return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "sessionToken" : "sessionToken"
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
+      for (let id in accountService.demoAccounts) {
+          let account = accountService.demoAccounts[id]
+          if (account['password'] === password && account['email'] === email) {
+              var sessiontoken = uuidv1();
+              demoSessions[sessiontoken] = account.id;
+              resolve({sessionToken: sessiontoken});
+              return;
+          }
+      }
+      resolve({code: 401, message: "Invalid username or password"});
   });
 }
 
@@ -31,7 +36,12 @@ exports.loginPOST = function(email,password) {
  **/
 exports.logoutPOST = function(sessionToken) {
   return new Promise(function(resolve, reject) {
-    resolve();
+      if (demoSessions[sessionToken]) {
+          delete demoSessions[sessionToken];
+          resolve({status: 'ok'})
+      } else {
+          resolve({code: 401, message: "User is not logged in"});
+      }
   });
 }
 
@@ -44,12 +54,11 @@ exports.logoutPOST = function(sessionToken) {
  **/
 exports.profileGET = function(sessionToken) {
   return new Promise(function(resolve, reject) {
-    var examples = {};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
+      if (demoSessions[sessionToken]) {
+          resolve(accountService.demoAccounts[demoSessions[sessionToken]])
+      } else {
+          resolve({code: 401, message: "User is not logged in"});
+      }
   });
 }
 

@@ -1,5 +1,18 @@
 'use strict';
 
+const uuidv1 = require('uuid/v1');
+
+var demoAccounts = {
+  1: {
+      "password": "admin1234",
+      "name": "admin",
+      "id": 1,
+      "email": "admin@securetech.com"
+  }
+}
+
+exports.demoAccounts = demoAccounts
+
 
 /**
  * Löscht einen Account
@@ -9,7 +22,8 @@
  **/
 exports.adminAccountIdDELETE = function(id) {
   return new Promise(function(resolve, reject) {
-    resolve();
+    delete demoAccounts[id];
+    resolve({status: "ok"});
   });
 }
 
@@ -21,14 +35,13 @@ exports.adminAccountIdDELETE = function(id) {
  * returns Account
  **/
 exports.adminAccountIdGET = function(id) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
+    return new Promise(function(resolve, reject) {
+        if (demoAccounts[id]) {
+          resolve(demoAccounts[id])
+        } else {
+          resolve({code: 404, message: 'User not found.'})
+        }
+    });
 }
 
 
@@ -41,7 +54,13 @@ exports.adminAccountIdGET = function(id) {
  **/
 exports.adminAccountIdPOST = function(id,account) {
   return new Promise(function(resolve, reject) {
-    resolve();
+      if (demoAccounts[id]) {
+          account.id = id; // Die darf man nicht ändern!
+          demoAccounts[id] = account;
+          resolve({status: "ok"});
+      } else {
+          resolve({code: 404, message: 'User not found.'})
+      }
   });
 }
 
@@ -53,12 +72,10 @@ exports.adminAccountIdPOST = function(id,account) {
  **/
 exports.adminAccountPUT = function(account) {
   return new Promise(function(resolve, reject) {
-    var examples = {};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
+      var id = uuidv1();
+      account.id = id;
+      demoAccounts[id] = account;
+      resolve({id: id});
   });
 }
 
