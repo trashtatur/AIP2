@@ -4,7 +4,7 @@ info:
   description: "RESTful API für AIP2"
   version: "1.0.0"
   title: "Security Guard Accounts"
-host: "localhost:8080"
+host: "aip.yourcoon.de/docs"
 basePath: "/api"
 tags:
 - name: "Accountverwaltung"
